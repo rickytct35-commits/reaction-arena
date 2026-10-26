@@ -1,0 +1,7 @@
+node_modules/
+server.log
+hostc.log
+SERVER_PID.txt
+TUNNEL_PID.txt
+bore
+*.log

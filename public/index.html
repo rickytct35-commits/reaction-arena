@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0f1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>反應擂台</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/i18n.js"></script>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand" id="brand">反應擂台</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span><span class="status-dot" id="connDot"></span><span id="connLabel" style="font-size:.75rem;color:var(--muted)"></span></span>
+      <select id="langSelect" class="lang-select" aria-label="Language"></select>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <section id="screen-home" class="screen active">
+    <div class="hero">
+      <h1 id="homeTitle">反應擂台</h1>
+      <p id="homeSub"></p>
+    </div>
+    <div class="card">
+      <details class="howto-fold">
+        <summary id="howtoSummary">ⓘ</summary>
+        <p class="howto" id="howTo"></p>
+      </details>
+      <label id="lblNick"></label>
+      <input id="nickname" maxlength="16" autocomplete="nickname" enterkeyhint="done" />
+      <div class="path-grid">
+        <button type="button" class="path-card" id="btnRandom">
+          <span class="emoji">🎲</span>
+          <span class="txt"><strong id="txtRandom"></strong></span>
+        </button>
+        <button type="button" class="path-card" id="btnFriends">
+          <span class="emoji">👥</span>
+          <span class="txt"><strong id="txtFriends"></strong></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRIENDS -->
+  <section id="screen-friends" class="screen">
+    <div class="card">
+      <h2 id="friendsTitle" style="margin-bottom:14px;font-size:1.2rem"></h2>
+      <div class="settings-grid">
+        <div class="row">
+          <label id="lblRoundsF"></label>
+          <select id="friendRounds">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button type="button" id="btnCreateRoom"></button>
+      </div>
+      <hr class="sep" />
+      <label id="lblJoinCode"></label>
+      <input id="joinCode" maxlength="5" inputmode="text" autocomplete="off" style="text-transform:uppercase;letter-spacing:.15em;font-weight:800;text-align:center" />
+      <div class="btn-row">
+        <button type="button" class="secondary" id="btnJoinRoom"></button>
+        <button type="button" class="ghost" id="btnBackFriends"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATCHING -->
+  <section id="screen-matching" class="screen">
+    <div class="card matching-pulse">
+      <div class="spin"></div>
+      <h2 id="matchingTitle"></h2>
+      <p id="matchingInfo" style="color:var(--muted);margin:8px 0 16px"></p>
+      <label id="lblMatchSeats"></label>
+      <select id="matchSeats">
+        <option value="2" selected>2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option>
+        <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+      </select>
+      <div class="btn-row">
+        <button type="button" class="danger" id="btnCancelMatch"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOBBY -->
+  <section id="screen-lobby" class="screen">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <h2 id="lobbyTitle" style="font-size:1.2rem"></h2>
+        <div>
+          <div class="code-big" id="lobbyCode">-----</div>
+          <div class="btn-row horizontal" style="justify-content:center;margin-top:6px">
+            <button type="button" class="ghost" id="btnCopyCode" style="padding:10px 12px;font-size:.85rem;min-height:40px"></button>
+            <button type="button" class="ghost" id="btnCopyLink" style="padding:10px 12px;font-size:.85rem;min-height:40px"></button>
+          </div>
+        </div>
+      </div>
+      <p id="shareHint" style="text-align:center;color:var(--muted);font-size:.8rem;margin:6px 0 14px"></p>
+      <ul class="player-list" id="lobbyPlayers"></ul>
+      <div id="hostSettings" class="settings-grid">
+        <div class="row">
+          <label id="lblRounds"></label>
+          <select id="setRounds">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button type="button" id="btnStart"></button>
+        <button type="button" class="secondary" id="btnReady"></button>
+        <button type="button" class="ghost" id="btnLeaveLobby"></button>
+      </div>
+      <p id="lobbyErr" class="err" hidden></p>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section id="screen-game" class="screen">
+    <div class="game-hud">
+      <div class="hud-round" id="hudRound"></div>
+      <div class="hud-phase" id="hudPhase"></div>
+    </div>
+
+    <div id="arena" class="arena">
+      <div id="countdownBig" class="countdown-big" hidden>3</div>
+      <div id="targetFlash" class="target-flash" hidden></div>
+      <div id="tapHint" class="tap-hint" hidden></div>
+      <div id="optionsGrid" class="options-grid" hidden></div>
+      <div id="resultPanel" class="result-panel" hidden></div>
+      <div id="betweenMsg" class="between-msg" hidden></div>
+    </div>
+
+    <div class="live-board card tight">
+      <h3 id="liveBoardTitle" style="font-size:.9rem;margin-bottom:8px;color:var(--muted)"></h3>
+      <ol class="lb-list" id="liveBoard"></ol>
+    </div>
+
+    <div class="btn-row" style="margin-top:10px">
+      <button type="button" class="ghost" id="btnEndGame" style="display:none"></button>
+      <button type="button" class="ghost" id="btnLeaveGame"></button>
+    </div>
+  </section>
+
+  <!-- PODIUM -->
+  <section id="screen-podium" class="screen">
+    <div class="card">
+      <h2 id="podiumTitle" style="text-align:center;margin-bottom:16px"></h2>
+      <ol class="podium-list" id="podiumList"></ol>
+      <div class="btn-row">
+        <button type="button" id="btnPlayAgain"></button>
+        <button type="button" class="ghost" id="btnPodiumHome"></button>
+      </div>
+    </div>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>

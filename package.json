@@ -1,0 +1,21 @@
+{
+  "name": "reaction-arena",
+  "version": "1.0.0",
+  "description": "反應擂台 — Reaction Arena multiplayer tap game",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "smoke": "node server/smoke-test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
+  }
+}
